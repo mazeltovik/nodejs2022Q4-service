@@ -10,10 +10,11 @@ import { User } from './entities/user.entity';
 
 import { v4 as uuidv4 } from 'uuid';
 import { userWithoutPassword } from './helpers/userWithoutPassword';
+import { db } from '../model/db';
 
 @Injectable()
 export class UsersService {
-  users: User[] = [];
+  users: User[] = db.users;
   create(createUserDto: CreateUserDto) {
     const { login, password } = createUserDto;
     const isUserExist = this.users.find((user) => user.login == login);
