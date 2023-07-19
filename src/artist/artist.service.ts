@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 
@@ -10,10 +11,16 @@ import { db } from 'src/model/db';
 import { v4 as uuidv4 } from 'uuid';
 import { Artist } from './entities/artist.entity';
 import { checkUpdateDto } from './helpers/checkUpdateDto';
+import { AlbumService } from 'src/album/album.service';
 
 @Injectable()
 export class ArtistService {
+  private albumService: AlbumService;
   artist: Artist[] = db.artist;
+  constructor(private moduleRef: ModuleRef) {}
+  onModuleInit() {
+    this.albumService = this.moduleRef.get(AlbumService);
+  }
   create(createArtistDto: CreateArtistDto) {
     const artist = {
       id: uuidv4(),
@@ -24,7 +31,6 @@ export class ArtistService {
   }
 
   findAll() {
-    console.log(db);
     return this.artist;
   }
 
@@ -60,6 +66,11 @@ export class ArtistService {
     if (!~artistIndex) {
       throw new NotFoundException('Artist was not found.');
     } else {
+      this.albumService.album.forEach((album) => {
+        if (album.artistId == id) {
+          album.artistId = null;
+        }
+      });
       this.artist.splice(artistIndex, 1);
     }
   }
