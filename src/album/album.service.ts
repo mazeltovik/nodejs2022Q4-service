@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 
@@ -10,10 +11,16 @@ import { db } from 'src/model/db';
 import { v4 as uuidv4 } from 'uuid';
 import { Album } from './entities/album.entity';
 import { checkUpdateAlbumDto } from './helpers/checkUpdateAlbumDto';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class AlbumService {
+  private trackService: TrackService;
   album: Album[] = db.album;
+  constructor(private moduleRef: ModuleRef) {}
+  onModuleInit() {
+    this.trackService = this.moduleRef.get(TrackService);
+  }
   create(createAlbumDto: CreateAlbumDto) {
     const album = {
       id: uuidv4(),
@@ -43,13 +50,16 @@ export class AlbumService {
       if (album) {
         album.name = name ? name : album.name;
         album.year = year ? year : album.year;
-        if (artistId) {
+        if (artistId !== undefined) {
           album.artistId = artistId;
-        } else if (artistId == null) {
-          album.artistId = artistId;
-        } else {
-          album.artistId = album.artistId;
         }
+        // if (artistId) {
+        //   album.artistId = artistId;
+        // } else if (artistId == null) {
+        //   album.artistId = artistId;
+        // } else {
+        //   album.artistId = album.artistId;
+        // }
         return album;
       } else {
         throw new NotFoundException('Album was not found.');
@@ -64,6 +74,11 @@ export class AlbumService {
     if (!~albumIndex) {
       throw new NotFoundException('Album was not found.');
     } else {
+      this.trackService.track.forEach((track) => {
+        if (track.albumId == id) {
+          track.albumId = null;
+        }
+      });
       this.album.splice(albumIndex, 1);
     }
   }

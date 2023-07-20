@@ -1,13 +1,15 @@
-import { User, Artist, Album } from './modelTypes';
+import { User, Artist, Album, Track } from './modelTypes';
 
 class DB {
   users: User[];
   artist: Artist[];
   album: Album[];
+  track: Track[];
   constructor() {
     this.users = [];
     this.artist = [];
     this.album = [];
+    this.track = [];
   }
 }
 

@@ -12,14 +12,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { Artist } from './entities/artist.entity';
 import { checkUpdateDto } from './helpers/checkUpdateDto';
 import { AlbumService } from 'src/album/album.service';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class ArtistService {
   private albumService: AlbumService;
+  private trackService: TrackService;
   artist: Artist[] = db.artist;
   constructor(private moduleRef: ModuleRef) {}
   onModuleInit() {
     this.albumService = this.moduleRef.get(AlbumService);
+    this.trackService = this.moduleRef.get(TrackService);
   }
   create(createArtistDto: CreateArtistDto) {
     const artist = {
@@ -69,6 +72,11 @@ export class ArtistService {
       this.albumService.album.forEach((album) => {
         if (album.artistId == id) {
           album.artistId = null;
+        }
+      });
+      this.trackService.track.forEach((track) => {
+        if (track.artistId == id) {
+          track.artistId = null;
         }
       });
       this.artist.splice(artistIndex, 1);
