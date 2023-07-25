@@ -1,4 +1,3 @@
-import { string } from 'joi';
 import { User, Artist, Album, Track, Favorites } from './modelTypes';
 
 class DB {
