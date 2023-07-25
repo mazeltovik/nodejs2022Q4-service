@@ -27,3 +27,9 @@ export type Track = {
   albumId: string | null; // refers to Album
   duration: number; // integer number
 };
+
+export type Favorites = {
+  artists: string[]; // favorite artists ids
+  albums: string[]; // favorite albums ids
+  tracks: string[]; // favorite tracks ids
+};

@@ -79,6 +79,10 @@ export class ArtistService {
           track.artistId = null;
         }
       });
+      // const favsArtistIndex = db.favs.artists.findIndex((favArtist) => {
+      //   favArtist == this.artist[artistIndex].id;
+      // });
+      // db.favs.artists.splice(favsArtistIndex, 1);
       this.artist.splice(artistIndex, 1);
     }
   }

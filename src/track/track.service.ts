@@ -82,6 +82,10 @@ export class TrackService {
     if (!~trackIndex) {
       throw new NotFoundException('Track was not found.');
     } else {
+      // const favsTrackIndex = db.favs.tracks.findIndex((favTrack) => {
+      //   favTrack == this.track[trackIndex].id;
+      // });
+      // db.favs.tracks.splice(favsTrackIndex, 1);
       this.track.splice(trackIndex, 1);
     }
   }
