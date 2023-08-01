@@ -2,6 +2,7 @@
 /dist
 /node_modules
 /src/cats
+.env
 
 # Logs
 logs
