@@ -7,7 +7,6 @@ import { SwaggerModule } from '@nestjs/swagger';
 import 'dotenv/config';
 
 const port = process.env.PORT;
-console.log(process.env.PORT);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

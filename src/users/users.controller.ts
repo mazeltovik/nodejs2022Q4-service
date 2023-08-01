@@ -56,7 +56,7 @@ export class UsersController {
   @HttpCode(204)
   remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     try {
-      this.usersService.remove(id);
+      return this.usersService.remove(id);
     } catch (err) {
       throw err;
     }
