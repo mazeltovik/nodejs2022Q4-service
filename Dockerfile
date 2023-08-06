@@ -1,4 +1,4 @@
-FROM node:lts-alpine3.18
+FROM node:lts-alpine3.18 AS build
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -18,6 +18,14 @@ COPY . .
 
 # Creates a "dist" folder with the production build
 RUN npm run build
+
+FROM node:lts-alpine3.18
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+
 
 EXPOSE 4000
 # Start the server using the production build

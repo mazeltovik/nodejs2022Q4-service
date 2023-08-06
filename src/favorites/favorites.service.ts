@@ -12,7 +12,7 @@ export class FavoritesService {
     this.initStorage();
   }
   async initStorage() {
-    const favs = this.prisma.favorites.findMany({ where: { id: '0' } });
+    const favs = await this.prisma.favorites.findFirst({ where: { id: '0' } });
     if (!favs) {
       await this.prisma.favorites.create({ data: { id: '0' } });
     }
