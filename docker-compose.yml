@@ -3,8 +3,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-      # Only will build development stage from our dockerfile
-      # target: development
     env_file:
         - .env
     environment:
@@ -12,7 +10,7 @@ services:
     volumes:
       - .:/usr/src/app
     ports:
-      - 4000:4000
+      - ${PORT}:${PORT}
     depends_on:
       - postgres
     restart: always
@@ -26,7 +24,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports: 
-      - '5432:5432'
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - docker-nest-postgres:/var/lib/postgresql/data
     networks:

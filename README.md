@@ -1,5 +1,23 @@
 # Home Library Service
 
+## Instruction how to run application
+
+1. Run `npm run install` to install dependencies
+2. Copy the `.env.example` file over to your own `.env` file
+3. Run `docker-compose up -d` to create docker image and start docker container
+4. Run `npx prisma migrate dev` to run local database migrations
+5. Run `docker compose down` to stop docker container
+
+## Vulnerabilities scanning
+
+1. Run `npm run docker:scan` to vulnerabilities scanning
+
+## Check deploy on docker hub
+
+1. Check this link:https://hub.docker.com/r/mazeltovik/nodejs2022q4-service-api
+
+
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
