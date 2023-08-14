@@ -63,26 +63,6 @@ export class ArtistService {
     const artist = await this.prisma.artist.findFirst({ where: { id } });
     if (artist) {
       await this.prisma.artist.delete({ where: { id } });
-      await this.prisma.track.updateMany({
-        where: {
-          artistId: {
-            contains: id,
-          },
-        },
-        data: {
-          artistId: null,
-        },
-      });
-      await this.prisma.album.updateMany({
-        where: {
-          artistId: {
-            contains: id,
-          },
-        },
-        data: {
-          artistId: null,
-        },
-      });
       const { artists } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
         select: {

@@ -72,16 +72,6 @@ export class AlbumService {
     const album = await this.prisma.album.findFirst({ where: { id } });
     if (album) {
       await this.prisma.album.delete({ where: { id } });
-      await this.prisma.track.updateMany({
-        where: {
-          albumId: {
-            contains: id,
-          },
-        },
-        data: {
-          albumId: null,
-        },
-      });
       const { albums } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
         select: {

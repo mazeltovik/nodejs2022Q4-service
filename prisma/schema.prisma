@@ -24,12 +24,16 @@ model Artist{
   id String @unique 
   name String
   grammy Boolean
+  album Album[]
+  track Track[]
 }
 
 model Track {
   id String @unique // uuid v4
   name String
+  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   artistId String? // refers to Artist
+  album Album? @relation(fields: [albumId], references: [id], onDelete: SetNull)
   albumId String? // refers to Album
   duration Int // integer number
 }
@@ -38,7 +42,9 @@ model Album {
   id String @unique // uuid v4
   name String
   year Int
+  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   artistId String? // refers to Artist
+  track Track[]
 }
 
 model Favorites {
