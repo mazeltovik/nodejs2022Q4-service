@@ -11,7 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { userWithoutPassword } from './helpers/userWithoutPassword';
 
 import { PrismaService } from 'src/prisma.service';
+import * as bcrypt from 'bcrypt';
 // import { User, Prisma } from '@prisma/client';
+
+const saltOrRounds = parseInt(process.env.CRYPT_SALT)
 
 @Injectable()
 export class UsersService {
@@ -23,11 +26,12 @@ export class UsersService {
     if (isUserExist) {
       throw new ConflictException('User already exist');
     } else {
+      const hash = await bcrypt.hash(password, saltOrRounds);
       const user = {
         id: uuidv4(),
         version: 1,
         login,
-        password,
+        password:hash
       };
       const createdUser = await this.prisma.user.create({ data: user });
       return userWithoutPassword(createdUser);
@@ -52,14 +56,12 @@ export class UsersService {
     const user = await this.prisma.user.findFirst({ where: { id } });
     if (user) {
       const { password, version } = user;
-      if (password == updateUserDto.oldPassword) {
-        // user.password = updateUserDto.newPassword;
-        // user.updatedAt = Date.now();
-        // user.version += 1;
+      if (await this.checkPassword(updateUserDto.oldPassword,password)) {
+        const hash = await bcrypt.hash(updateUserDto.newPassword, saltOrRounds);
         const updatedUser = await this.prisma.user.update({
           where: { id },
           data: {
-            password: updateUserDto.newPassword,
+            password: hash,
             version: version + 1,
             updatedAt: new Date(),
           },
@@ -80,5 +82,9 @@ export class UsersService {
     } else {
       throw new NotFoundException("User with this id is doesn't exist");
     }
+  }
+  async checkPassword(password:string,hash:string){
+    const isMatch = await bcrypt.compare(password, hash);
+    return isMatch
   }
 }
