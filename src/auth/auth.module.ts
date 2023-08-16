@@ -10,10 +10,14 @@ import { AuthGuard } from './auth.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService,PrismaService, {
-    provide: APP_GUARD,
-    useClass: AuthGuard,
-  },],
+  providers: [
+    AuthService,
+    PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
   imports: [
     UsersModule,
     JwtModule.register({

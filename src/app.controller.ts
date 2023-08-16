@@ -5,7 +5,7 @@ import { Public } from './decorators/publicPath';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
- 
+
   @Public()
   @Get()
   getHello(): string {
