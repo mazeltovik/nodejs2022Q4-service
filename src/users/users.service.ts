@@ -14,8 +14,8 @@ import { userWithoutPassword } from './helpers/userWithoutPassword';
 import { PrismaService } from 'src/prisma.service';
 import * as bcrypt from 'bcrypt';
 // import { User, Prisma } from '@prisma/client';
-import { MyLogger } from 'src/logs/my-logger.service';
-import { routes } from 'src/logs/my-logger.constants';
+import { MyLogger } from 'src/my-logger/my-logger.service';
+import { routes } from 'src/my-logger/my-logger.constants';
 
 const saltOrRounds = parseInt(process.env.CRYPT_SALT);
 

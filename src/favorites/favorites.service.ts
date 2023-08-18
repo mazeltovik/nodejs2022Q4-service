@@ -1,15 +1,19 @@
 import {
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 
 import { PrismaService } from 'src/prisma.service';
+import { MyLogger } from 'src/my-logger/my-logger.service';
+import { routes } from 'src/my-logger/my-logger.constants';
 
 @Injectable()
 export class FavoritesService {
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: PrismaService, private myLogger: MyLogger) {
     this.initStorage();
+    this.myLogger.setContext('FavoritesService');
   }
   async initStorage() {
     const favs = await this.prisma.favorites.findFirst({ where: { id: '0' } });
@@ -17,7 +21,13 @@ export class FavoritesService {
       await this.prisma.favorites.create({ data: { id: '0' } });
     }
   }
-  async findAll() {
+  async findAll(param, body) {
+    this.myLogger.customLog(
+      routes.favs.all,
+      JSON.stringify(param),
+      JSON.stringify(body),
+      HttpStatus.OK,
+    );
     const {
       albums: favAlbums,
       artists: favArtists,
@@ -58,9 +68,15 @@ export class FavoritesService {
       tracks,
     };
   }
-  async createTrackFav(id: string) {
+  async createTrackFav(id: string, body) {
     const track = await this.prisma.track.findFirst({ where: { id } });
     if (track) {
+      this.myLogger.customLog(
+        routes.favs.track,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.CREATED,
+      );
       const { tracks } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
         select: {
@@ -83,9 +99,15 @@ export class FavoritesService {
     }
   }
 
-  async createAlbumFav(id: string) {
+  async createAlbumFav(id: string, body) {
     const album = await this.prisma.album.findFirst({ where: { id } });
     if (album) {
+      this.myLogger.customLog(
+        routes.favs.album,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.CREATED,
+      );
       const { albums } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
         select: {
@@ -108,9 +130,15 @@ export class FavoritesService {
     }
   }
 
-  async createArtistFav(id: string) {
+  async createArtistFav(id: string, body) {
     const artist = await this.prisma.artist.findFirst({ where: { id } });
     if (artist) {
+      this.myLogger.customLog(
+        routes.favs.artist,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.CREATED,
+      );
       const { artists } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
         select: {
@@ -133,7 +161,7 @@ export class FavoritesService {
     }
   }
 
-  async removeTrackFav(id: string) {
+  async removeTrackFav(id: string, body) {
     const { tracks } = await this.prisma.favorites.findFirst({
       where: { id: '0' },
       select: {
@@ -141,6 +169,12 @@ export class FavoritesService {
       },
     });
     if (tracks.includes(id)) {
+      this.myLogger.customLog(
+        routes.favs.track,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.NO_CONTENT,
+      );
       await this.prisma.favorites.update({
         where: {
           id: '0',
@@ -156,7 +190,7 @@ export class FavoritesService {
     }
   }
 
-  async removeAlbumFav(id: string) {
+  async removeAlbumFav(id: string, body) {
     const { albums } = await this.prisma.favorites.findFirst({
       where: { id: '0' },
       select: {
@@ -164,6 +198,12 @@ export class FavoritesService {
       },
     });
     if (albums.includes(id)) {
+      this.myLogger.customLog(
+        routes.favs.album,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.NO_CONTENT,
+      );
       await this.prisma.favorites.update({
         where: {
           id: '0',
@@ -179,7 +219,7 @@ export class FavoritesService {
     }
   }
 
-  async removeArtistFav(id: string) {
+  async removeArtistFav(id: string, body) {
     const { artists } = await this.prisma.favorites.findFirst({
       where: { id: '0' },
       select: {
@@ -187,6 +227,12 @@ export class FavoritesService {
       },
     });
     if (artists.includes(id)) {
+      this.myLogger.customLog(
+        routes.favs.artist,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.NO_CONTENT,
+      );
       await this.prisma.favorites.update({
         where: {
           id: '0',

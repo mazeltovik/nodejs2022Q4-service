@@ -7,7 +7,7 @@ import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 
 import 'dotenv/config';
-import { MyLogger } from './logs/my-logger.service';
+import { MyLogger } from './my-logger/my-logger.service';
 
 const port = process.env.PORT;
 const pathToYaml = resolve(__dirname, '..', 'doc', 'api.yaml');

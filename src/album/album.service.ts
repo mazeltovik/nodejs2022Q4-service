@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,25 +11,47 @@ import { v4 as uuidv4 } from 'uuid';
 import { checkUpdateAlbumDto } from './helpers/checkUpdateAlbumDto';
 
 import { PrismaService } from 'src/prisma.service';
+import { MyLogger } from 'src/my-logger/my-logger.service';
+import { routes } from 'src/my-logger/my-logger.constants';
 
 @Injectable()
 export class AlbumService {
-  constructor(private prisma: PrismaService) {}
-  async create(createAlbumDto: CreateAlbumDto) {
+  constructor(private prisma: PrismaService, private myLogger: MyLogger) {
+    this.myLogger.setContext('AlbumService');
+  }
+  async create(createAlbumDto: CreateAlbumDto, param) {
     const album = {
       id: uuidv4(),
       ...createAlbumDto,
     };
+    this.myLogger.customLog(
+      routes.album,
+      JSON.stringify(param),
+      JSON.stringify(createAlbumDto),
+      HttpStatus.CREATED,
+    );
     return this.prisma.album.create({ data: album });
   }
 
-  async findAll() {
+  async findAll(body, param) {
+    this.myLogger.customLog(
+      routes.album,
+      JSON.stringify(param),
+      JSON.stringify(body),
+      HttpStatus.OK,
+    );
     return this.prisma.album.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, body) {
     const album = await this.prisma.album.findFirst({ where: { id } });
     if (album) {
+      this.myLogger.customLog(
+        routes.album,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.OK,
+      );
       return album;
     } else {
       throw new NotFoundException('Album was not found.');
@@ -45,6 +68,12 @@ export class AlbumService {
         if (artistId !== undefined) {
           album.artistId = artistId;
         }
+        this.myLogger.customLog(
+          routes.album,
+          JSON.stringify({ id }),
+          JSON.stringify(updateAlbumDto),
+          HttpStatus.OK,
+        );
         // if (artistId) {
         //   album.artistId = artistId;
         // } else if (artistId == null) {
@@ -68,9 +97,15 @@ export class AlbumService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, body) {
     const album = await this.prisma.album.findFirst({ where: { id } });
     if (album) {
+      this.myLogger.customLog(
+        routes.album,
+        JSON.stringify({ id }),
+        JSON.stringify(body),
+        HttpStatus.NO_CONTENT,
+      );
       await this.prisma.album.delete({ where: { id } });
       const { albums } = await this.prisma.favorites.findFirst({
         where: { id: '0' },
