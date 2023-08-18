@@ -2,24 +2,21 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
 import { userWithoutPassword } from 'src/users/helpers/userWithoutPassword';
+import { jwtConstants } from './constants';
 
 const saltOrRounds = parseInt(process.env.CRYPT_SALT);
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-    private usersService: UsersService,
-  ) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
   async signUp(signUpDto: CreateUserDto) {
     const { login, password } = signUpDto;
@@ -45,10 +42,8 @@ export class AuthService {
       isLoginExist &&
       (await this.checkPassword(password, isLoginExist.password))
     ) {
-      const payload = { sub: isLoginExist.id, username: isLoginExist.login };
-      return {
-        accessToken: await this.jwtService.signAsync(payload),
-      };
+      const tokens = await this.getTokens(isLoginExist.id, isLoginExist.login);
+      return tokens;
     } else {
       throw new ForbiddenException('Incorrect login or password');
     }
@@ -56,5 +51,52 @@ export class AuthService {
   async checkPassword(password: string, hash: string) {
     const isMatch = await bcrypt.compare(password, hash);
     return isMatch;
+  }
+  async getTokens(userId: string, username: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          username,
+        },
+        {
+          secret: jwtConstants.secret,
+          expiresIn: jwtConstants.expireTokenTime,
+        },
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          username,
+        },
+        {
+          secret: jwtConstants.refreshSecret,
+          expiresIn: jwtConstants.expireRefreshTokenTime,
+        },
+      ),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+  async refreshTokens(userId: string, refreshToken: string | undefined) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is missing or invalid');
+    }
+    const isLoginExist = await this.prisma.user.findFirst({
+      where: { id: userId },
+    });
+    if (isLoginExist) {
+      const payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: jwtConstants.refreshSecret,
+      });
+      if (!payload) {
+        throw new UnauthorizedException('Refresh token is missing or invalid');
+      }
+      const tokens = await this.getTokens(isLoginExist.id, isLoginExist.login);
+      return tokens;
+    }
   }
 }

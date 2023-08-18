@@ -3,10 +3,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
 import { PrismaService } from 'src/prisma.service';
-import { jwtConstants } from './constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from './auth.guard';
+import { AccessTokenStrategy } from './strategies/accessToken.strategy';
+import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
+import { AccessTokenGuard } from './accessToken.guard';
 
 @Module({
   controllers: [AuthController],
@@ -15,16 +16,12 @@ import { AuthGuard } from './auth.guard';
     PrismaService,
     {
       provide: APP_GUARD,
-      useClass: AuthGuard,
+      useClass: AccessTokenGuard,
     },
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
   ],
-  imports: [
-    UsersModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: jwtConstants.expireTokenTime },
-    }),
-  ],
+  imports: [UsersModule, JwtModule.register({})],
   exports: [AuthService],
 })
 export class AuthModule {}
