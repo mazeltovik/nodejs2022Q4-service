@@ -8,6 +8,7 @@ import { resolve } from 'path';
 
 import 'dotenv/config';
 import { MyLogger } from './my-logger/my-logger.service';
+import { HttpExceptionFilter } from './my-filter/http-exception.filter';
 
 const port = process.env.PORT;
 const pathToYaml = resolve(__dirname, '..', 'doc', 'api.yaml');
@@ -25,6 +26,7 @@ async function bootstrap() {
     console.error(e.message);
   }
   app.useGlobalPipes(new UserValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
   await app.listen(port);
 }
 bootstrap();
