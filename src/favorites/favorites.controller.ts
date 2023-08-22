@@ -6,6 +6,7 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpCode,
+  Body,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 
@@ -13,22 +14,31 @@ import { FavoritesService } from './favorites.service';
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
   @Get()
-  findAllFavs() {
-    return this.favoritesService.findAll();
+  findAllFavs(
+    @Param() param: Record<string, unknown>,
+    @Body() body: Record<string, unknown>,
+  ) {
+    return this.favoritesService.findAll(param, body);
   }
   @Post('track/:id')
-  createTrackFav(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  createTrackFav(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.favoritesService.createTrackFav(id);
+      return this.favoritesService.createTrackFav(id, body);
     } catch (err) {
       throw err;
     }
   }
 
   @Post('album/:id')
-  createAlbumFav(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  createAlbumFav(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.favoritesService.createAlbumFav(id);
+      return this.favoritesService.createAlbumFav(id, body);
     } catch (err) {
       throw err;
     }
@@ -37,9 +47,10 @@ export class FavoritesController {
   @Post('artist/:id')
   createArtistFav(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
   ) {
     try {
-      return this.favoritesService.createArtistFav(id);
+      return this.favoritesService.createArtistFav(id, body);
     } catch (err) {
       throw err;
     }
@@ -47,9 +58,12 @@ export class FavoritesController {
 
   @Delete('track/:id')
   @HttpCode(204)
-  removeTrackFav(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  removeTrackFav(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.favoritesService.removeTrackFav(id);
+      return this.favoritesService.removeTrackFav(id, body);
     } catch (err) {
       throw err;
     }
@@ -57,9 +71,12 @@ export class FavoritesController {
 
   @Delete('album/:id')
   @HttpCode(204)
-  removeAlbumFav(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  removeAlbumFav(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.favoritesService.removeAlbumFav(id);
+      return this.favoritesService.removeAlbumFav(id, body);
     } catch (err) {
       throw err;
     }
@@ -69,9 +86,10 @@ export class FavoritesController {
   @HttpCode(204)
   removeArtistFav(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
   ) {
     try {
-      return this.favoritesService.removeArtistFav(id);
+      return this.favoritesService.removeArtistFav(id, body);
     } catch (err) {
       throw err;
     }

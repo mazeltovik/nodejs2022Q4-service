@@ -18,23 +18,32 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
-  create(@Body() createArtistDto: CreateArtistDto) {
+  create(
+    @Body() createArtistDto: CreateArtistDto,
+    @Param() param: Record<string, unknown>,
+  ) {
     try {
-      return this.artistService.create(createArtistDto);
+      return this.artistService.create(createArtistDto, param);
     } catch (err) {
       throw err;
     }
   }
 
   @Get()
-  findAll() {
-    return this.artistService.findAll();
+  findAll(
+    @Param() param: Record<string, unknown>,
+    @Body() body: Record<string, unknown>,
+  ) {
+    return this.artistService.findAll(param, body);
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.artistService.findOne(id);
+      return this.artistService.findOne(id, body);
     } catch (err) {
       throw err;
     }
@@ -54,9 +63,12 @@ export class ArtistController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.artistService.remove(id);
+      return this.artistService.remove(id, body);
     } catch (err) {
       throw err;
     }

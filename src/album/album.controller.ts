@@ -18,23 +18,32 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
+  create(
+    @Body() createAlbumDto: CreateAlbumDto,
+    @Param() param: Record<string, unknown>,
+  ) {
     try {
-      return this.albumService.create(createAlbumDto);
+      return this.albumService.create(createAlbumDto, param);
     } catch (err) {
       throw err;
     }
   }
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  findAll(
+    @Param() param: Record<string, unknown>,
+    @Body() body: Record<string, unknown>,
+  ) {
+    return this.albumService.findAll(body, param);
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.albumService.findOne(id);
+      return this.albumService.findOne(id, body);
     } catch (err) {
       throw err;
     }
@@ -50,9 +59,12 @@ export class AlbumController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
+  remove(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() body: Record<string, unknown>,
+  ) {
     try {
-      return this.albumService.remove(id);
+      return this.albumService.remove(id, body);
     } catch (err) {
       throw err;
     }

@@ -4,17 +4,11 @@
 
 1. Run `npm run install` to install dependencies
 2. Copy the `.env.example` file over to your own `.env` file
-3. Run `docker-compose up -d` to create docker image and start docker container
-4. Run `npx prisma migrate dev` to run local database migrations
-5. Run `docker compose down` to stop docker container
+3. Start database and run `npx prisma migrate dev --name init`
+3. Run `npm run start:dev`
+4. Success logs saves in dist/my-logger/successlogs and error logs saves in dist/my-filter/errorLogs
+5. Run `npm run test:auth`
 
-## Vulnerabilities scanning
-
-1. Run `npm run docker:scan` to vulnerabilities scanning
-
-## Check deploy on docker hub
-
-1. Check this link:https://hub.docker.com/r/mazeltovik/nodejs2022q4-service-api
 
 
 
